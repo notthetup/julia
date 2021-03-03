@@ -601,10 +601,15 @@ end
 function show_typeparams(io::IO, env::SimpleVector, orig::SimpleVector, wheres::Vector)
     n = length(env)
     elide = length(wheres)
+    function egal_var(p::TypeVar, @nospecialize o)
+        return o isa TypeVar &&
+            ccall(:jl_types_egal, Cint, (Any, Any), p.ub, o.ub) != 0 &&
+            ccall(:jl_types_egal, Cint, (Any, Any), p.lb, o.lb) != 0
+    end
     for i = n:-1:1
         p = env[i]
         if p isa TypeVar
-            if i == n && orig[i] === p && show_can_elide(p, wheres, elide, env, i)
+            if i == n && egal_var(p, orig[i]) && show_can_elide(p, wheres, elide, env, i)
                 n -= 1
                 elide -= 1
             elseif p.lb === Union{} && show_can_elide(p, wheres, elide, env, i)
