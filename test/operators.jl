@@ -284,3 +284,15 @@ a = rand(3, 3)
 @test transpose(a) === a'ᵀ
 
 @test [Base.afoldl(+, 1:i...) for i = 1:40] == [i * (i + 1) ÷ 2 for i = 1:40]
+
+# pr #40031
+@test isless(0, nothing)
+@test !isless(nothing, 0)
+@test !isless(nothing, nothing)
+@test isless(missing, nothing)
+@test !isless(nothing, missing)
+@test_throws MethodError 0 < nothing
+@test_throws MethodError nothing < 0
+@test_throws MethodError nothing < nothing
+@test_throws MethodError missing < nothing
+@test_throws MethodError nothing < missing

@@ -168,6 +168,10 @@ isless(x::AbstractFloat, y::AbstractFloat) = (!isnan(x) & (isnan(y) | signless(x
 isless(x::Real,          y::AbstractFloat) = (!isnan(x) & (isnan(y) | signless(x, y))) | (x < y)
 isless(x::AbstractFloat, y::Real         ) = (!isnan(x) & (isnan(y) | signless(x, y))) | (x < y)
 
+isless(::Any, ::Nothing) = true
+isless(::Nothing, ::Any) = false
+isless(::Nothing, ::Nothing) = false
+
 """
     isgreater(x, y)
 
@@ -334,6 +338,10 @@ false
 ```
 """
 <(x, y) = isless(x, y)
+
+<(x, y::Nothing) = throw(MethodError(<, (x, y)))
+<(x::Nothing, y) = throw(MethodError(<, (x, y)))
+<(x::Nothing, y::Nothing) = throw(MethodError(<, (x, y)))
 
 """
     >(x, y)
